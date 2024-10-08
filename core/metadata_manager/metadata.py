@@ -4,23 +4,14 @@ import os
 import re
 
 equipment_key = "equipment"
+
 class MetadataManager:
-    _instance = None
 
     def __init__(self):
-        """Initialize the metadata dictionary and load equipment terms."""
-        if MetadataManager._instance is not None:
-            raise Exception("This class is a singleton! Use `get_instance()` to access it.")
+        """Initialize the metadata dictionary for each adapter."""
         self._metadata = {}
-        self.equipment_terms = None  # This will hold the EquipmentTerms object
+        self.equipment_terms = None
         self.load_equipment_terms()
-
-    @classmethod
-    def get_instance(cls):
-        """Return the singleton instance, creating it if necessary."""
-        if cls._instance is None:
-            cls._instance = MetadataManager()
-        return cls._instance
 
     def load_equipment_terms(self):
         """Load YAML configuration into equipment terms."""
@@ -34,7 +25,7 @@ class MetadataManager:
             print(f"YAML file {filepath} not found.")
 
     def load_from_file(self, file_path, adapter_type=None):
-        """Load metadata from a JSON file and update the singleton metadata."""
+        """Load metadata from a JSON file and update the metadata dictionary."""
         try:
             with open(file_path, 'r') as file:
                 if adapter_type is not None:
@@ -62,12 +53,10 @@ class MetadataManager:
         else:
             return self.load_from_file(filename, equipment_key)
 
-    def is_called(self,action,term):
-        if action.split("/")[-1] == term.split("/")[-1]:
-            return True
-        return False
+    def is_called(self, action, term):
+        return action.split("/")[-1] == term.split("/")[-1]
     
-    def get_instance_id(self,topic):
+    def get_instance_id(self, topic):
         return topic.split("/")[2]
     
     def __getattr__(self, item):
@@ -122,6 +111,3 @@ class EquipmentTerms:
 
     def __repr__(self):
         return f"{self.__dict__}"
-
-# Singleton access
-metadata_manager = MetadataManager.get_instance()

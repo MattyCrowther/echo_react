@@ -2,13 +2,14 @@ import os
 import time
 from threading import Event
 from abc import ABC, abstractmethod
-from core.metadata_manager.metadata import metadata_manager
+from core.metadata_manager.metadata import MetadataManager
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 metadata_fn = os.path.join(current_dir, 'equipment_adapter.json')
 
 class EquipmentAdapter:
-    def __init__(self,instance_data,watcher,process_adapters,interpreter):
+    def __init__(self,instance_data,watcher,process_adapters,interpreter,
+                 metadata_manager=None):
         if not isinstance(process_adapters,(list,tuple,set)):
             process_adapters = [process_adapters]
         self._processes = process_adapters
@@ -16,8 +17,12 @@ class EquipmentAdapter:
         self._interpreter = interpreter
         self._watcher = watcher
         self._stop_event = Event()
-        metadata_manager.load_from_file(metadata_fn)
-        metadata_manager.add_equipment_data(instance_data)
+        if metadata_manager is None:
+            self._metadata_manager = MetadataManager()
+        else:
+            self._metadata_manager = metadata_manager
+        self._metadata_manager.load_from_file(metadata_fn)
+        self._metadata_manager.add_equipment_data(instance_data)
 
     def start(self):
         """
@@ -40,10 +45,10 @@ class EquipmentAdapter:
         # Needs reworking really.
         for process in self._processes:
             for phase in process._phases:
-                phase._output.flush(metadata_manager.details())
-                phase._output.flush(metadata_manager.running())
-                phase._output.flush(metadata_manager.experiment.start())
-                phase._output.flush(metadata_manager.experiment.start())
+                phase._output.flush(self._metadata_manager.details())
+                phase._output.flush(self._metadata_manager.running())
+                phase._output.flush(self._metadata_manager.experiment.start())
+                phase._output.flush(self._metadata_manager.experiment.start())
         self._stop_event.set()
         self._watcher.stop()
 

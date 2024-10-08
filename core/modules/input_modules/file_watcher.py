@@ -7,9 +7,10 @@ from watchdog.observers import Observer
 from core.modules.input_modules.event_watcher import EventWatcher
 
 class FileWatcher(FileSystemEventHandler,EventWatcher):
-    def __init__(self, file_path, start_callbacks=None,
+    def __init__(self, file_path,metadata_manager, start_callbacks=None,
                  measurement_callbacks=None, stop_callbacks=None):
-        super(FileWatcher, self).__init__(measurement_callbacks=measurement_callbacks)  
+        super(FileWatcher, self).__init__(metadata_manager,
+                                          measurement_callbacks=measurement_callbacks)
         
         self._path, self._file_name = os.path.split(file_path)
         if self._path == "":

@@ -1,9 +1,6 @@
-
-from core.metadata_manager.metadata import metadata_manager
 class EventWatcher:
-    def __init__(self,initialise_callbacks=None,
+    def __init__(self,metadata_manager,initialise_callbacks=None,
                  measurement_callbacks=None):
-        super().__init__()
         if initialise_callbacks is None:
             self._initialise_callbacks = []
         elif not isinstance(initialise_callbacks,(list,set,tuple)):
@@ -17,9 +14,10 @@ class EventWatcher:
             self._measurement_callbacks = [measurement_callbacks]
         else:
             self._measurement_callbacks = measurement_callbacks
-
+        self._metadata_manager = metadata_manager
+        
     def start(self):
-        equipment_data = metadata_manager.get_equipment_data()
+        equipment_data = self._metadata_manager.get_equipment_data()
         for callback in self.initialise_callbacks:
             callback(equipment_data)
 

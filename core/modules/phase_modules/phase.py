@@ -1,7 +1,7 @@
 
 
 class PhaseModule:
-    def __init__(self,output_adapter,term_builder,
+    def __init__(self,output_adapter,term_builder,metadata_manager,
                  measurements=None,interpreter=None):
         super().__init__()
         self._output = output_adapter
@@ -13,6 +13,7 @@ class PhaseModule:
             self._measurements = measurements
         self._interpreter = interpreter
         self._term_builder = term_builder
+        self._metadata_manager = metadata_manager
 
     def set_interpreter(self, interpreter):
         self._interpreter = interpreter

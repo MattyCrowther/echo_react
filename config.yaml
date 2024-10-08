@@ -1,10 +1,25 @@
-EQUIPMENT:
-  code: BioLector1
-  write_file: tmp.csv
-
-EQUIPMENT_DATA:
-  instance_id: biolector_devonshire10
-  institute: NCL
+EQUIPMENT_INSTANCES:
+  - equipment:
+      code: BioLector1
+      data:
+        instance_id: biolector_devonshire10
+        institute: NCL
+      requirements:
+        write_file: tmp.csv
+  - equipment:
+      code: BioLector1
+      data:
+        instance_id: biolector_manchester4
+        institute: MAN
+      requirements:
+        write_file: tmp2.csv
+  - equipment:
+      code: BioLector1
+      data:
+        instance_id: biolector_london22
+        institute: LDN
+      requirements:
+        write_file: tmp3.csv
 
 OUTPUTS:
   - code: MQTT
@@ -23,4 +38,3 @@ OUTPUTS:
   - code: FILE
     filename: local.json
     fallback: null
-

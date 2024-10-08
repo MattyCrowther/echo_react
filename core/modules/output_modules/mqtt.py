@@ -3,7 +3,6 @@ import time
 import logging
 import json
 from core.modules.output_modules.output_module import OutputModule
-from core.metadata_manager.metadata import metadata_manager
 FIRST_RECONNECT_DELAY = 1
 RECONNECT_RATE = 2
 MAX_RECONNECT_COUNT = 12
@@ -53,24 +52,11 @@ class MQTT(OutputModule):
             else:
                 logger.error(f"Failed to send message: {result.rc}")
 
-    def get_existing_ids(self):
-        topic = metadata_manager.details()
-        self.subscribe(topic)
-        time.sleep(2)
-        self.unsubscribe(topic)
-        ids = []
-        for k,v in self.messages.items():
-            if metadata_manager.is_called(k,topic):
-                ids.append(metadata_manager.get_instance_id(k))
-        self.reset_messages()
-        return ids
-
     def flush(self,topic):
         self.client.publish(topic=topic, 
                             payload=None, 
                             qos=0, retain=True)
         
-    
     def enable_logger(self):
         self.client.enable_logger()
 

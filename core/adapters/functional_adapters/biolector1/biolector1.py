@@ -23,7 +23,7 @@ from core.modules.measurement_modules.biomass import Biomass
 from core.modules.measurement_modules.o2 import O2
 from core.modules.measurement_modules.ph import pH
 
-from core.metadata_manager.metadata import metadata_manager
+from core.metadata_manager.metadata import MetadataManager
 # Note the biolector json file is an example, not a concrete decision on terms...
 current_dir = os.path.dirname(os.path.abspath(__file__))
 metadata_fn = os.path.join(current_dir, 'biolector1.json')
@@ -193,12 +193,13 @@ interpreter = Biolector1Interpreter()
 
 class Biolector1Adapter(Bioreactor):
     def __init__(self,instance_data,output,write_file=None):
-        watcher = CSVWatcher(write_file)
+        metadata_manager = MetadataManager()
+        watcher = CSVWatcher(write_file,metadata_manager)
         measurements = [Biomass(),O2(),pH()]
-        start_p = StartPhase(output)
-        stop_p = StopPhase(output)
-        measure_p = MeasurementPhase(output,measurements)
-        details_p = InitialisationPhase(output)
+        start_p = StartPhase(output,metadata_manager)
+        stop_p = StopPhase(output,metadata_manager)
+        measure_p = MeasurementPhase(output,measurements,metadata_manager)
+        details_p = InitialisationPhase(output,metadata_manager)
 
         watcher.add_start_callback(start_p.update)
         watcher.add_measurement_callback(measure_p.update)
@@ -207,9 +208,9 @@ class Biolector1Adapter(Bioreactor):
         phase = [start_p,measure_p,stop_p]
         mock_process = [DiscreteProcess(phase)]
         super().__init__(instance_data,watcher,mock_process,
-                         interpreter)
-        metadata_manager.add_equipment_data(metadata_fn)
+                         interpreter,metadata_manager=metadata_manager)
         self._write_file = write_file
+        self._metadata_manager.add_equipment_data(metadata_fn)
 
 
     def simulate(self,filepath,wait=None,delay=None):
