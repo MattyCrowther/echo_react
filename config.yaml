@@ -1,0 +1,26 @@
+EQUIPMENT:
+  code: BioLector1
+  write_file: tmp.csv
+
+EQUIPMENT_DATA:
+  instance_id: biolector_devonshire10
+  institute: NCL
+
+OUTPUTS:
+  - code: MQTT
+    broker: localhost
+    port: 1883
+    username: mcrowther
+    password: Radeon12300
+    fallback: KEYDB
+
+  - code: KEYDB
+    host: localhost
+    port: 6379
+    db: 0
+    fallback: FILE
+
+  - code: FILE
+    filename: local.json
+    fallback: null
+
